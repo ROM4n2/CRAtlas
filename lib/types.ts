@@ -143,4 +143,5 @@ export interface SearchResult {
   type: 'person' | 'event' | 'faction';
   name: string;
   description: string;
+  _rank?: number;  // 搜索排序用，消费方忽略
 }

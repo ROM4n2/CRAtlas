@@ -7,6 +7,7 @@
 | 文件 | 用途 |
 | --- | --- |
 | `types.ts` | 全部核心类型定义（实体、关系、控制状态、图谱节点/边） |
+| `data.ts` | 数据查询层——组件访问数据的唯一入口（封装 `data/*.ts` 数据集） |
 | `README.md` | 本文件——目录说明 |
 
 ## 类型分层
@@ -23,14 +24,17 @@
 ```
 lib/types.ts          ← 无内部依赖（基础层）
     ↑
-lib/data/*.ts         ← 数据文件（填充实体）
+lib/data.ts           ← 查询层（导入 data/*.ts + types.ts，对外暴露查询函数）
     ↑
-app/**, components/**, hooks/    ← 上层消费
+data/*.ts             ← 数据集（填充实体，导入 types.ts）
+    ↑
+app/**, components/**, hooks/    ← 上层消费（仅通过 lib/data.ts 访问数据）
 ```
 
 - `lib/types.ts` **不依赖**本应用任何其他模块，可被任意层安全导入。
-- 数据文件（后续任务创建）导入本模块的接口来约束实体形状。
-- 组件与页面通过 `import type { ... } from '@/lib/types'` 引用，保持类型层与运行时解耦。
+- `lib/data.ts` 是组件访问数据的**唯一入口**——架构规则禁止组件直接 import `data/*.ts` 文件。
+- 数据文件（`data/*.ts`）导入本模块的接口来约束实体形状。
+- 组件与页面通过 `import { getPerson, search, ... } from '@/lib/data'` 引用查询函数。
 
 ## 约定
 
