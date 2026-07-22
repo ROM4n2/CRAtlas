@@ -9,6 +9,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'CRAtlas — 文革派系势力可视化',
@@ -24,7 +25,9 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body>
         <Navbar />
-        <main className="min-h-screen">{children}</main>
+        <ErrorBoundary>
+          <main className="min-h-screen">{children}</main>
+        </ErrorBoundary>
       </body>
     </html>
   );
