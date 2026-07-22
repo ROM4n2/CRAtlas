@@ -1,4 +1,4 @@
-# CRMap — 文化大革命时期派系势力可视化平台
+# CRAtlas — 文化大革命时期派系势力可视化平台
 
 > 设计规范文档 · 2026-07-22
 
@@ -94,7 +94,7 @@
 ## 2. 项目结构
 
 ```
-CRMap/
+CRAtlas/
 ├── app/                          # Next.js App Router
 │   ├── layout.tsx                # 根布局（导航栏、全局状态）
 │   ├── page.tsx                  # 首页（概览/入口）
@@ -869,7 +869,7 @@ interface TimeState {
 /**
  * @file    china-map.tsx
  * @brief   中国省级地图可视化组件，按派系势力着色并标注事件散点。
- * @author  CRMap Team
+ * @author  CRAtlas Team
  * @version 1.0.0
  * @date    2026-07-22
  */
@@ -1049,4 +1049,4 @@ npm run lint           # ESLint 检查
 
 ---
 
-*本文档为 CRMap 项目设计规范，所有开发活动以此为准。*
+*本文档为 CRAtlas 项目设计规范，所有开发活动以此为准。*
