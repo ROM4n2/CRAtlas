@@ -14,6 +14,7 @@
 - 明确区分"立场"与"史料"：立场是编纂视角和组织框架，史料是客观来源
 - 所有信息标注史料出处和类型，用户可自行判断
 - 不迎合西方资本主义/社民主义叙事，也不属于中国特色社会主义框架
+- 详细的史料冲突处理策略和编纂立场边界见 §0.4
 
 ### 0.3 目标受众
 
@@ -21,7 +22,38 @@
 - **次要**：专业研究者（通过史料标注满足其需求）
 - 设计为分层体验——概览模式给初学者，深度信息给研究者
 
-### 0.4 核心功能
+### 0.4 史料冲突处理策略
+
+> 当同一事件/人物/派系在不同史料中存在不同说法时，按以下规则处理：
+
+**处理规则（优先级从高到低）**：
+
+1. **多说并存**：当两种及以上来源对同一事实有冲突定性时，详情页并列呈现各方说法，标注各自来源。
+2. **学术共识优先**：当学术研究与官方档案冲突时，优先呈现学术研究成果，同时标注官方说法。
+3. **编纂立场兜底**：当史料完全缺失或冲突无法调和时，编纂立场介入判断，但必须在 `note` 字段明确标注"此处为编纂方判断"。
+4. **禁止隐匿冲突**：不允许只呈现与编纂立场一致的史料而忽略其他说法。
+
+**编纂立场介入边界**：
+
+| 环节 | 优先方 | 说明 |
+|------|--------|------|
+| 分类框架（rebel/conservative/military） | 立场 | 这是编纂视角的核心组织逻辑 |
+| 事件选择（收录哪些事件） | 立场 | 基于马列毛主义视角判断重要性 |
+| 日期、地点、人名 | 史料 | 严格按史料，有冲突则多说并存 |
+| 事件描述 | 史料为主 | 基于史料，立场体现在选材和编排 |
+| 派系定性 | 史料+立场 | 优先史料，缺失时立场兜底并标注 |
+
+**争议标注机制**：
+
+在事件/人物/派系详情页，当存在史料冲突时，显示显式标注：
+
+```
+⚠️ 史料冲突：关于此事存在多种说法
+- 说法 A（来源：xxx）
+- 说法 B（来源：xxx）
+```
+
+### 0.5 核心功能
 
 | 功能 | 描述 |
 |------|------|
@@ -32,7 +64,7 @@
 | 搜索 | 全局搜索人物/事件/派系 |
 | 交流（后期） | 评论、笔记、内容贡献 |
 
-### 0.5 部署约束
+### 0.6 部署约束
 
 - **零服务器**：纯静态站点，托管 GitHub Pages
 - **零成本**：无需购买服务器或数据库
@@ -101,13 +133,14 @@ CRMap/
 │   │   ├── SourceList.tsx        # 史料出处列表
 │   │   └── Tag.tsx               # 标签组件
 │   └── comments/
-│       └── GiscusComments.tsx    # Giscus 评论（Phase 4）
+│       └── GiscusComments.tsx    # Giscus 评论（Phase 4，每实体一独立评论区）
 ├── data/                         # 数据层（TypeScript 文件）
 │   ├── events.ts                 # 事件数据集
 │   ├── people.ts                 # 人物数据集
 │   ├── factions.ts               # 派系数据集
 │   ├── regions.ts                # 地区数据集
-│   └── relationships.ts          # 关系数据集
+│   ├── relationships.ts          # 关系数据集
+│   └── regionControls.ts         # 地区控制时间线（地图着色核心数据）
 ├── lib/
 │   ├── types.ts                  # TypeScript 类型定义
 │   ├── data.ts                   # 数据查询/过滤函数
@@ -165,8 +198,7 @@ interface Person {
   birthYear?: number;
   deathYear?: number;
   biography: string;                // 生平简介
-  factionIds: string[];             // 所属派系 ID（当前/最终状态，用于快速展示）
-  affiliations: Affiliation[];      // 带时间段的完整隶属历史（用于时间线视图和精确查询）
+  affiliations: Affiliation[];      // 带时间段的完整隶属历史（唯一数据源）
   sources: Source[];
 }
 
@@ -282,13 +314,25 @@ interface GraphNode {
 /**
  * 关系图边（Cytoscape 适配）
  */
+/** Cytoscape 边样式（仅本项目用到的属性子集） */
+interface CytoscapeEdgeStyle {
+  'line-color'?: string;
+  'line-style'?: 'solid' | 'dashed' | 'dotted';
+  'line-width'?: number;
+  'target-arrow-shape'?: 'triangle' | 'none';
+  'source-arrow-shape'?: 'triangle' | 'none';
+  'curve-style'?: 'bezier' | 'unbundled-bezier';
+  'arrow-scale'?: number;
+  'opacity'?: number;
+}
+
 interface GraphEdge {
   id: string;
   source: string;                   // 源节点 ID
   target: string;                   // 目标节点 ID
   label: string;
   type: RelationshipType;
-  style: Record<string, unknown>;   // Cytoscape 样式属性
+  style: CytoscapeEdgeStyle;        // Cytoscape 样式属性（类型安全）
 }
 
 /**
@@ -313,10 +357,19 @@ interface SearchResult {
 
 ### 3.2 字段使用边界
 
-**`Person.factionIds` vs `Person.affiliations`**：
-- `factionIds`：冗余字段，表示人物当前/最终所属派系。用于列表页快速展示（无需遍历时间段）。
-- `affiliations`：完整字段，记录所有历史隶属关系。用于人物详情页时间线、时间轴联动查询。
-- **更新规则**：修改 `affiliations` 时，同步更新 `factionIds` 为 `affiliations` 中最新一条的 `factionId`。
+**方案 A 选定：删除 `factionIds` 冗余字段，消除不一致根因。**
+
+`affiliations` 是人物派系隶属的**唯一数据源**。需要"当前所属"时，通过 `lib/data.ts` 中的工具函数推导：
+
+```typescript
+/** 获取人物在指定日期的派系隶属（默认今天） */
+function getCurrentAffiliations(person: Person, date?: string): Affiliation[];
+
+/** 获取人物在指定日期的派系 ID 列表 */
+function getCurrentFactionIds(person: Person, date?: string): string[];
+```
+
+**禁止**：任何组件不得期望 `Person` 上有 `factionIds` 字段。所有消费方必须通过工具函数查询。
 
 ### 3.3 数据设计原则
 
@@ -325,14 +378,81 @@ interface SearchResult {
 3. **时间段支持**：`Affiliation` 和 `Relationship` 都带时间段——支持历史演变表达
 4. **类型安全**：所有数据文件导出时符合 TypeScript 类型，编译期检查
 
-### 3.4 地图 GeoJSON 来源
+### 3.4 地区控制数据（regionControls）
+
+#### 3.4.1 数据文件：`data/regionControls.ts`
+
+地图"省份着色"的核心数据源。每条记录描述某省在某时间段被哪个派系控制。
+
+```typescript
+/** 地区控制状态 */
+type ControlStatus = 'controlled' | 'contested' | 'transitional' | 'no-data';
+// controlled = 单一派系主导; contested = 多方割据/争夺中;
+// transitional = 权力过渡期; no-data = 无足够史料判断
+
+/** 单条地区控制记录 */
+interface RegionControlRecord {
+  regionId: string;                 // 地区 ID
+  startDate: string;                // 控制起始日期
+  endDate?: string;                 // 控制结束日期（undefined 表示延续到最后）
+  status: ControlStatus;            // 控制状态
+  factions: {                       // 参与派系及其权重（strength 总和为 1）
+    factionId: string;
+    strength: number;               // 0-1，控制强度/势力占比
+  }[];
+  note?: string;                    // 判断依据说明
+  sources: Source[];                // 史料出处
+}
+```
+
+#### 3.4.2 "控制"的操作性定义
+
+> 判定"某派系在某时段控制某省"的可操作判据（满足两条及以上即认定）：
+
+1. **权力机构**：省级革命委员会、党委、军管会的主要负责人来自该派系
+2. **组织存在**：该派系在该省有大规模群众组织（非个别小组）
+3. **舆论控制**：该省主要报刊/电台由该派系主导
+4. **武装力量**：该省军区/军分区支持该派系（适用于军方控制）
+
+> 史料冲突时：优先采信官方档案和学术研究，回忆录仅作辅助。判断依据写入 `note` 字段。
+
+#### 3.4.3 `strength` 量化规则
+
+| strength 范围 | 含义 |
+|---------------|------|
+| 0.8 - 1.0 | 稳固控制：权力机构、组织、舆论均在该派系手中 |
+| 0.5 - 0.7 | 主导但不稳固：有对立派系存在但不足以挑战 |
+| 0.3 - 0.4 | 弱势存在：有组织活动但未掌权 |
+| contested 状态 | 多个派系 strength 相近（差值 < 0.2），标注为"争夺中" |
+
+#### 3.4.4 史料可获得性风险与预研计划 ⚠️ 最高优先级风险
+
+> **核心风险**：省级权力交替的派系归属在公开史料中既稀缺又高度争议。地图可视化的前提依赖于这些数据的可靠性。
+
+**Phase 0 可行性预研（必须完成，否则 Phase 1 不启动）**：
+
+选 5 个代表性省份（北京、上海、辽宁、广东、四川），实际查阅史料，尝试构建 1966-1976 逐季/逐年的控制时间线。预研结果写入 `docs/superpowers/specs/feasibility-spike.md`。
+
+**降级方案**（按触发条件启用）：
+
+| 条件 | 降级方案 |
+|------|----------|
+| 能为 ≥20 个省构建时间线 | 正常方案：全地图省级着色 |
+| 能为 10-19 个省构建时间线 | 降级 A：有数据的省份着色，其余标"无数据" |
+| 能为 <10 个省构建时间线 | 降级 B：只标注事件发生地（散点），不填充全省颜色 |
+| 省级数据完全不可得 | 降级 C：粒度放宽到"大区"（东北/华北/华东/中南/西南/西北）|
+
+**触发规则**：Phase 0 第 1 周末评估预研结果，由项目组决定启用哪套方案。
+
+### 3.5 地图 GeoJSON 来源
 
 ECharts 5.x 起不再内置中国地图 GeoJSON。本项目地图数据来源：
 
 - **方案**：使用阿里云 DataV.GeoAtlas（`https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json`）提供中国全境 GeoJSON，按省份 `adcode` 获取省级边界
 - **备选**：使用 Natural Earth 数据或清华大学 GIS 数据
 - **注意**：地图绘制须包含台湾、南海诸岛等中国领土（省略图），这是政治正确的必要要求
-- **存储**：运行时从 DataV 获取，构建时缓存到 `public/china.json` 以确保离线可用性
+- **加载策略**：**构建时一次性下载到 `public/china.json`，纯静态引用**。不依赖运行时网络获取（与 §0.6 "零服务器" 约束一致，GitHub Pages 无 serverless 能力）
+- **降级策略**：如果构建时下载失败，使用 `npm postinstall` 脚本重试；如果运行时 `china.json` 加载失败，显示文字提示 + 事件列表（不白屏）
 
 ### 3.5 示例数据（Phase 0 填充）
 
@@ -413,7 +533,7 @@ interface FactionGraphProps {
 |----------|------|------|
 | 隶属 (membership) | 实线 | 有 |
 | 因果 (causality) | 虚线 | 有 |
-| 派系互动 (faction-interaction) | 粗实线 | 双向 |
+| 派系互动 (faction-interaction) | 粗实线 | 双向（数据层用两条有向边 A→B + B→A 表示，查询函数自动合并为一条双向箭头渲染） |
 | 社交 (social) | 点线 | 无 |
 
 **布局算法**：
@@ -427,6 +547,12 @@ interface FactionGraphProps {
 - 滚轮缩放 / 拖拽平移
 - 搜索框输入 → 高亮定位节点
 - 筛选面板 → 按类型/派系/时间范围过滤
+
+**`faction-interaction` 渲染实现**：
+- 数据层：双向互动存储为两条有向 `Relationship`（A→B 和 B→A），`description` 相同
+- 查询层：`lib/data.ts` 的 `getRelationships()` 检测到同 `description` 的配对边时，自动合并为一条 Cytoscape 边
+- 渲染层：Cytoscape 使用 `curve-style: bezier` + 同时设置 `target-arrow` 和 `source-arrow` 实现双向箭头
+- `social` 类型同理：私人关系也是无向的，用两条有向边表示，渲染时去掉箭头
 
 ### 4.3 时间轴组件（components/timeline/TimeAxis.tsx）
 
@@ -457,13 +583,27 @@ interface TimeAxisProps {
 - 拖拽选择时间范围
 - 当前日期指示器（垂直线）
 
+**`dateRange` 语义定义**：
+
+`dateRange` 是**当前视图的时间过滤窗口**，影响所有三个视图：
+
+| 视图 | `dateRange` 的作用 |
+|------|-------------------|
+| 地图 | 显示该时间范围内发生的所有事件散点（累积显示） |
+| 关系图 | 只显示在该时间范围内生效的关系（`startDate` ≤ range 结束 且 `endDate` ≥ range 开始） |
+| 时间轴 | 播放范围限制在此区间内 |
+
+> 当 `dateRange` 为 `null` 时，表示"全时间范围"（1966-01-01 至 1976-10-31），不进行过滤。
+
+**播放速度基准**：`1x = 30 天/秒`（即 1 秒走一个月，全 10 年约 120 秒播完）。`speed` 换算公式：`实际天/秒 = speed × 30`。
+
 **全局状态（Zustand store.ts）**：
 ```typescript
 interface TimeState {
-  currentDate: string;
-  isPlaying: boolean;
-  speed: number;
-  dateRange: [string, string] | null;  // 范围选择
+  currentDate: string;              // 当前选中日期（播放头位置）
+  isPlaying: boolean;               // 是否正在播放
+  speed: number;                    // 倍率（1x/2x/4x），实际天/秒 = speed × 30
+  dateRange: [string, string] | null;  // 时间过滤窗口（null = 全范围）
   setDate: (date: string) => void;
   togglePlay: () => void;
   setSpeed: (speed: number) => void;
@@ -488,7 +628,21 @@ interface TimeState {
 | `/faction/[id]` | `app/faction/[id]/page.tsx` | 派系详情：概述、组织演变、成员、控制地区 |
 | `/about` | `app/about/page.tsx` | 关于页：项目说明、立场声明、史料来源说明、使用指南 |
 
-### 5.2 用户流程
+### 5.2 分层体验设计
+
+每个详情页提供**概览层**和**深度层**，通过"展开更多"按钮切换。
+
+| 页面 | 概览层（默认，面向初学者） | 深度层（展开后，面向研究者） |
+|------|--------------------------|---------------------------|
+| 事件详情 | 一句话概要 + 时间地点 + 3 个关键影响 | 全文描述 + 所有参与者 + 完整史料出处 + 学术争议标注 |
+| 人物详情 | 头像 + 一句话定位 + 派系标签 | 完整生平 + 派系隶属时间线 + 参与事件列表 + 社交关系 |
+| 派系详情 | 名称 + 类型标签 + 一句话概述 | 组织演变时间线 + 全部成员 + 控制地区变化 + 史料出处 |
+
+**切换机制**：页面底部固定"展开深度信息"按钮，点击后展开深度层内容（平滑动画），按钮变为"收起"。状态保存在组件本地（无需全局状态）。
+
+**首页分层**：首页默认显示概览模式（三大视图入口 + 简短介绍），点击"深入了解"展开项目背景、方法论、史料说明。
+
+### 5.3 用户流程
 
 ```
 首页 (/)
@@ -507,13 +661,13 @@ interface TimeState {
             └── 按类型筛选 → 查看因果链/隶属网
 ```
 
-### 5.3 全局元素
+### 5.4 全局元素
 
 - **顶部导航栏**（`Navbar.tsx`）：Logo + 三大视图切换链接 + 搜索按钮 (Cmd+K) + 关于页链接
 - **时间轴状态条**（地图/时间轴页面底部）：全局时间控制条
 - **搜索弹窗**（`SearchModal.tsx`）：Cmd+K 触发，搜索人物/事件/派系，回车跳转详情
 
-### 5.4 关于页内容（/about）
+### 5.5 关于页内容（/about）
 
 1. **项目说明**：本项目是什么、为谁而作
 2. **意识形态立场声明**：
@@ -525,7 +679,10 @@ interface TimeState {
    - 史料可靠性分级说明
    - 主要参考书目
 4. **使用指南**：如何使用三大视图、如何阅读关系图
-5. **贡献指南**：如何提交修正、补充史料（PR 流程）
+5. **贡献指南**：
+   - **低门槛入口（推荐）**：每个详情页底部"建议修正"按钮 → 跳转 GitHub Issues 预填模板（用户只需写文字，不用懂 Git）
+   - **正式入口**：GitHub Pull Request（适合熟悉 Git 的贡献者）
+   - **Issue 模板**包含：问题类型（修正/补充/新增）、涉及实体 ID、建议内容、史料来源
 
 ---
 
@@ -555,8 +712,10 @@ interface TimeState {
 │  getEventsByDate(date) → Event[]                    │
 │  getRegionControl(date) → RegionControlMap          │
 │  getRelationships(filter) → Relationship[]         │
-│  getPerson(id) → Person                             │
+│  getCurrentFactionIds(person, date) → string[]      │
 │  search(query) → SearchResult[]                     │
+│   排序规则: 精确匹配 > 前缀匹配 > 子串匹配;          │
+│   同等级内按重要性 major > significant > minor       │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
@@ -588,7 +747,14 @@ interface TimeState {
 - [ ] `lib/store.ts` Zustand 时间轴状态
 - [ ] `CLAUDE.md` 项目 AI 开发指令
 
-**验收标准**：`npm run build && next export` 成功，GitHub Pages 能访问空白首页
+**验收标准**：
+1. `npm run build && next export` 成功，GitHub Pages 能访问空白首页
+2. **ECharts 能成功注册并渲染中国地图**（省份轮廓正确显示，哪怕无数据着色）
+3. **Cytoscape 能在 Next.js App Router 中正确初始化**并渲染 10 个测试节点（验证 SSR 兼容性）
+4. **Zustand store 的 `currentDate` 能在两个组件间同步**（如时间轴组件改日期，地图组件收到更新）
+5. **可行性预研完成**：输出 `docs/superpowers/specs/feasibility-spike.md`，决定地图着色方案（正常/降级 A/B/C）
+
+> 第 2-5 项是 Phase 1 的地基，Phase 0 不验证，Phase 1 会踩坑。
 
 ### Phase 1：核心可视化（第 2-3 周）
 
@@ -626,6 +792,9 @@ interface TimeState {
 - [ ] `/faction/[id]` 派系详情页
 - [ ] `/timeline` 时间轴视图页面
 - [ ] 内容扩充：每年至少 5-10 个关键事件
+  - **规模估算**：Phase 3 完成时预期——事件 50-100 个、人物 30-50 个、派系 15-25 个、关系 100-200 条
+  - **节点总量**：关系图约 100-200 个节点 + 100-200 条边，Cytoscape Canvas 渲染可轻松应对，**无需虚拟滚动**
+  - **性能判断**：此数据量级不构成性能风险，§10 "数据量大导致性能问题" 降级为低优先级
 - [ ] `SearchModal.tsx` 全局搜索
 - [ ] `SourceList.tsx` 史料出处展示组件
 
@@ -636,8 +805,11 @@ interface TimeState {
 **目标**：社区互动
 
 - [ ] `GiscusComments.tsx` 评论集成
+  - **评论粒度**：每个实体（事件/人物/派系）一个独立评论区
+  - **Giscus 配置**：使用 GitHub Discussions 的 `pathname` 匹配（`window.location.pathname`），每个页面的 pathname 唯一对应一个 Discussion
+  - **分类**：在 Discussions 中创建"事件讨论"、"人物讨论"、"派系讨论"三个分类
 - [ ] 笔记/标注功能（localStorage）
-- [ ] 内容贡献指南 + PR 模板
+- [ ] 内容贡献指南 + PR 模板 + **低门槛 Issue 入口**（见 P2.4）
 - [ ] `/about` 页完善贡献说明
 
 **验收标准**：用户能在事件页评论，能做个人笔记
@@ -702,7 +874,7 @@ npm run lint           # ESLint 检查
 - [ ] GitHub Pages 自动部署成功
 - [ ] 地图正确渲染中国全境（34 个省级行政区）
 - [ ] 时间轴拖动后地图和事件联动更新
-- [ ] 关系图能渲染 100+ 节点不卡顿
+- [ ] 关系图能渲染预期数据量（100-200 节点 + 100-200 边）流畅交互
 - [ ] 所有详情页路由可访问
 - [ ] 搜索功能返回正确结果
 - [ ] 移动端基本可用
@@ -719,11 +891,13 @@ npm run lint           # ESLint 检查
 
 | 风险 | 缓解措施 |
 |------|----------|
-| 史料来源争议 | 每条信息标注来源类型和出处，不回避争议 |
-| 派系分类简化 | 承认分类是粗略的，详情页说明复杂性 |
-| 数据量大导致性能问题 | 按需加载、虚拟滚动、Canvas 渲染 |
+| ⚠️ 省级派系控制史料稀缺且争议（最高优先级） | Phase 0 可行性预研验证；不通过则启用降级方案（降级 A/B/C）；详见 §3.4.4 |
+| 史料来源争议与冲突 | §0.4 多说并存策略 + 学术共识优先 + 编纂立场兜底并标注 |
+| 派系分类简化 | 承认分类是粗略的，详情页说明复杂性，争议标注机制 |
+| 数据量大导致性能问题 | **低优先级**——预期 200 节点，Cytoscape Canvas 可轻松应对，无需虚拟滚动 |
 | GitHub Pages 构建限制 | 控制产物大小，必要时用 Vercel |
-| 意识形态争议 | 关于页明确声明立场，区分立场与史料 |
+| 意识形态争议 | 关于页明确声明立场，§0.4 定义编纂立场介入边界 |
+| GeoJSON 加载失败 | 构建时下载缓存 + 运行时失败降级为文字提示 + 事件列表 |
 
 ---
 
