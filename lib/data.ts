@@ -25,6 +25,7 @@ import type {
   RegionControlMap,
   SearchResult,
   Affiliation,
+  FactionType,
 } from '@/lib/types';
 
 /**
@@ -198,4 +199,40 @@ export function getFaction(id: string): Faction | undefined {
 
 export function getRegion(id: string): Region | undefined {
   return regions.find((r) => r.id === id);
+}
+
+/**
+ * 根据派系类型返回对应颜色（用于地图着色和图例）。
+ *
+ * @param factionType - 派系类型
+ * @returns HEX 颜色字符串
+ */
+export function getFactionColor(factionType: FactionType | undefined): string {
+  switch (factionType) {
+    case 'rebel': return '#DC2626';
+    case 'conservative': return '#2563EB';
+    case 'military': return '#CA8A04';
+    case 'other': return '#9333EA';
+    default: return '#9CA3AF'; // nodata
+  }
+}
+
+/**
+ * 根据派系 ID 返回派系名称（用于显示）。
+ *
+ * @param factionId - 派系 ID
+ * @returns 派系名称，未找到返回 "未知"
+ */
+export function getFactionName(factionId: string): string {
+  return factions.find((f) => f.id === factionId)?.name ?? '未知';
+}
+
+/**
+ * 根据派系 ID 返回派系类型。
+ *
+ * @param factionId - 派系 ID
+ * @returns FactionType，未找到返回 undefined
+ */
+export function getFactionType(factionId: string): FactionType | undefined {
+  return factions.find((f) => f.id === factionId)?.factionType;
 }
