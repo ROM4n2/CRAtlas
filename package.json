@@ -1,0 +1,38 @@
+{
+  "name": "crmap",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "download-geojson": "bash scripts/download-geojson.sh"
+  },
+  "dependencies": {
+    "cytoscape": "^3.34.0",
+    "echarts": "^5.6.0",
+    "echarts-for-react": "^3.0.6",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-cytoscapejs": "^2.0.0",
+    "react-dom": "^18.3.0",
+    "zustand": "^4.5.7"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "autoprefixer": "^10.5.4",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.35",
+    "jest": "^29.7.0",
+    "postcss": "^8.5.22",
+    "tailwindcss": "^3.4.19",
+    "ts-jest": "^29.4.12",
+    "typescript": "^5.9.3"
+  }
+}
