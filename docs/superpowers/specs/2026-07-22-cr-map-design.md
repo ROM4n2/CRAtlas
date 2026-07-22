@@ -830,28 +830,176 @@ interface TimeState {
 
 ## 8. 开发规范
 
-### 8.1 代码注释要求
+### 8.1 工程架构与模块分层
 
-每一层文件必须包含文件级注释说明：
-- **数据文件**：说明数据来源、覆盖范围、更新方式
-- **组件文件**：说明组件职责、Props 接口、使用方式
-- **工具函数**：说明功能、参数、返回值、使用示例
-- **页面文件**：说明页面功能、数据依赖、路由参数
+项目遵循清晰的职责分层，禁止跨层直接调用：
 
-### 8.2 数据录入规范
+| 层级 | 目录 | 职责 | 依赖规则 |
+|------|------|------|----------|
+| **核心层 (Core/Domain)** | `lib/types.ts` | 定义实体、值对象、核心业务类型 | 不依赖任何框架和外部基础设施 |
+| **应用层 (Application)** | `lib/data.ts`, `lib/store.ts` | 编排数据查询、状态管理、业务用例 | 仅依赖核心层 |
+| **接口层 (Interface)** | `app/` (pages + components) | 处理页面路由、用户交互、可视化渲染 | 调用应用层 |
+| **基础设施层 (Infrastructure)** | `data/*.ts` | 实现数据源（文件读取、数据结构） | 实现核心层定义的类型约束 |
+
+**调用方向**：接口层 → 应用层 → 核心层 ← 基础设施层
+
+> 组件不允许直接 `import` 数据文件，必须通过 `lib/data.ts` 的查询函数间接访问。
+
+### 8.2 命名规范
+
+| 类别 | 规范 | 示例 |
+|------|------|------|
+| **文件夹** | `kebab-case` | `user-profile/`, `event-detail/` |
+| **文件** | `kebab-case`（PascalCase 用于组件文件） | `china-map.tsx`, `time-axis.tsx` |
+| **类/接口/类型** | `PascalCase`，接口**禁止**加 `I` 前缀 | `Person`, `Relationship`, `GraphNode` |
+| **变量/函数/方法** | `camelCase` | `getCurrentFactionIds`, `startDate` |
+| **布尔值** | `is`/`has`/`should` 前缀 | `isPlaying`, `hasData`, `shouldRender` |
+| **常量** | `UPPER_SNAKE_CASE`（仅全局不变常量） | `MAX_SPEED`, `DEFAULT_DATE` |
+| **Props 接口** | `组件名 + Props` | `ChinaMapProps`, `TimeAxisProps` |
+
+### 8.3 代码注释规范
+
+注释遵循 **"Why > What"** 原则——解释背后意图而非复述代码。
+
+#### 8.3.1 文件头注释
+
+每个核心模块、组件、工具函数的源文件顶部必须包含：
+
+```typescript
+/**
+ * @file    china-map.tsx
+ * @brief   中国省级地图可视化组件，按派系势力着色并标注事件散点。
+ * @author  CRMap Team
+ * @version 1.0.0
+ * @date    2026-07-22
+ */
+```
+
+#### 8.3.2 函数/方法注释
+
+所有对外暴露的公共方法、复杂私有方法必须使用 TSDoc 标准：
+
+```typescript
+/**
+ * 获取指定日期的地区控制状态，用于地图省份着色。
+ *
+ * @param date - ISO 格式日期字符串 (YYYY-MM-DD)
+ * @returns 地区控制映射表，key 为 regionId，value 为控制派系和强度
+ * @throws {Error} 当 date 格式非法或超出 1966-1976 范围时抛出
+ * @example
+ * const control = getRegionControl('1967-01-01');
+ * // { beijing: { factionId: 'xxx', strength: 0.8 }, ... }
+ */
+function getRegionControl(date: string): RegionControlMap;
+```
+
+必须包含：`@param`（含类型和用途）、`@returns`、`@throws`（若适用）、`@example`（推荐）。
+
+#### 8.3.3 行内注释
+
+- **复杂逻辑**：在难以理解的算法、正则、状态机前，用 `//` 解释业务背景或边界条件
+- **TODO/FIXME**：必须附上负责人和日期，格式：`// TODO(author 2026-07-22): 描述`
+- **禁止**：对显而易见的代码添加注释（如 `const count = 0; // 初始化 count 为 0`）
+
+#### 8.3.4 各层注释重点
+
+| 文件类型 | 注释重点 |
+|----------|----------|
+| 数据文件 (`data/*.ts`) | 数据来源、覆盖范围、更新方式、史料出处 |
+| 组件文件 (`components/**/*`) | 组件职责、Props 接口、使用方式、渲染逻辑 |
+| 工具函数 (`lib/data.ts`) | 功能、参数、返回值、使用示例、边界条件 |
+| 页面文件 (`app/**/page.tsx`) | 页面功能、数据依赖、路由参数 |
+
+### 8.4 数据录入规范
 
 - 每条事件必须有至少一个 `sources` 条目
 - 日期格式统一 ISO 8601 (`YYYY-MM-DD`)
 - ID 命名规则：小写 + 连字符，如 `feb-outline-1966`
 - 新数据提交需通过 PR，附带史料来源说明
 
-### 8.3 Git 规范
+### 8.5 Git 提交与版本管理
 
-- 分支策略：`main`（生产）+ `develop`（开发）+ 功能分支
-- 提交信息：`[Phase X] 类型: 描述`，如 `[Phase 1] feat: 地图省份着色`
-- 每个 Phase 完成后打 tag
+严格遵循 **Conventional Commits（约定式提交）** 规范：
 
-### 8.4 文档维护
+**格式**：`[Phase X] type(scope): subject`（subject 首字母小写，不加句号）
+
+**type 强制分类**：
+
+| type | 含义 |
+|------|------|
+| `feat` | 新功能 |
+| `fix` | 修复 Bug |
+| `docs` | 仅文档变更 |
+| `style` | 不影响代码含义的变动（空格、格式化等） |
+| `refactor` | 代码重构（既不是新功能也不是修复） |
+| `perf` | 性能优化 |
+| `test` | 增加或修正测试 |
+| `chore` | 构建工具、辅助工具的变动 |
+
+**示例**：
+```
+[Phase 1] feat(map): 地图省份着色功能
+[Phase 1] fix(timeline): 修复播放头超出范围的问题
+[Phase 2] docs(spec): 补充关系图组件接口说明
+[Phase 3] refactor(data): 提取 getCurrentFactionIds 工具函数
+```
+
+**分支策略**：`main`（生产）+ `develop`（开发）+ 功能分支（`feature/xxx`、`fix/xxx`）
+
+**标签**：每个 Phase 完成后打 tag（`v0.1.0`、`v0.2.0`……）
+
+### 8.6 错误处理与日志规范
+
+> 本项目为静态前端站点（无后端），错误处理聚焦于前端边界。
+
+| 场景 | 处理方式 |
+|------|----------|
+| 组件渲染失败 | React Error Boundary 捕获，显示降级 UI（不白屏） |
+| GeoJSON 加载失败 | 降级为文字提示 + 事件列表（见 §3.5） |
+| 数据查询异常 | `lib/data.ts` 函数返回空数组 + `console.warn`，不抛异常 |
+| 第三方库初始化失败 | try/catch 包裹 + 显示友好提示 |
+
+**日志分级**（使用 `console`）：
+
+| 级别 | 使用场景 |
+|------|----------|
+| `console.error` | 不可恢复的错误（地图无法渲染、构建失败） |
+| `console.warn` | 降级、数据缺失、配置缺失 |
+| `console.info` | 仅开发模式使用，生产环境移除（通过 ESLint 规则 `no-console` 控制） |
+
+**全局捕获**：在 `app/layout.tsx` 设置 React Error Boundary + `window.onerror` 兜底。
+
+### 8.7 测试规范
+
+| 类别 | 要求 |
+|------|------|
+| **构建测试** | `npm run build` 通过 = 类型检查 + 静态导出均成功 |
+| **单元测试** | `lib/data.ts` 查询函数必须覆盖（核心数据逻辑），覆盖率 ≥ 80% |
+| **组件测试** | 关键组件（ChinaMap、FactionGraph）至少一个渲染测试 |
+| **测试文件** | 与源文件同级，后缀 `.test.ts` / `.test.tsx` |
+| **测试结构** | 严格遵循 AAA 模式（Arrange-Act-Assert） |
+| **禁止** | 测试用例中使用 `if` 条件判断 |
+
+> Phase 0-2 聚焦构建验证，Phase 3+ 补充单元测试，Phase 5 完善测试覆盖。
+
+### 8.8 安全与环境配置
+
+- **禁止硬编码凭证**：所有第三方服务密钥（如 Giscus 仓库 ID）通过环境变量注入
+- **环境变量模板**：提供 `.env.example`，包含所有必需变量键名及占位符，说明用途
+
+```bash
+# .env.example
+# Giscus 评论配置（https://giscus.app 获取）
+NEXT_PUBLIC_GISCUS_REPO=your-org/your-repo
+NEXT_PUBLIC_GISCUS_REPO_ID=your-repo-id
+NEXT_PUBLIC_GISCUS_CATEGORY=Discussions
+NEXT_PUBLIC_GISCUS_CATEGORY_ID=your-category-id
+```
+
+- **静态站点安全**：本项目无后端、无数据库、无用户认证，攻击面极小
+- **依赖安全**：定期 `npm audit`，GitHub Dependabot 自动监控
+
+### 8.9 文档维护
 
 - 本设计文档是开发期间的"合同"，任何设计变更需先更新本文档
 - 每个 Phase 完成后更新本文档的实际进展记录
