@@ -178,7 +178,7 @@ export function search(query: string): SearchResult[] {
 
   // 排序：精确 > 前缀 > 子串
   return results
-    .sort((a, b) => a._rank - b._rank)
+    .sort((a, b) => (a._rank ?? 999) - (b._rank ?? 999))
     .map(({ _rank, ...rest }) => rest);
 }
 

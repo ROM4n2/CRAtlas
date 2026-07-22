@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-rebel: #DC2626;
+  --color-conservative: #2563EB;
+  --color-military: #CA8A04;
+  --color-contested: #9333EA;
+  --color-nodata: #9CA3AF;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
