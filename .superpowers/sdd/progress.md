@@ -1,4 +1,6 @@
-# SDD Progress Ledger — CRAtlas Phase 0
+# SDD Progress Ledger — CRAtlas
+
+## Phase 0 — COMPLETE
 
 ## Tasks
 
@@ -22,3 +24,17 @@
 - T1: config files lack @file/@brief headers
 - T9: ECharts full import 622kB — optimize in Phase 1 (tree-shaking)
 - T11: web search unavailable during feasibility research — verify sources in Phase 1
+
+## Phase 1: 核心可视化
+
+- [ ] Task 1: 修复测试架构违规 + 增加查询函数测试
+- [ ] Task 2: 修复北京地区控制记录重叠
+- [ ] Task 3: 添加 React Error Boundary
+- [ ] Task 4: 扩展示例数据（补齐事件/人物）
+- [ ] Task 5: getFactionColor/getFactionName/getFactionType 辅助函数
+- [ ] Task 6: 时间轴组件 TimeAxis.tsx
+- [ ] Task 7: 地图图例 MapLegend.tsx
+- [ ] Task 8: 事件弹出卡片 EventPopup.tsx
+- [ ] Task 9: 事件侧边栏 EventSidebar.tsx
+- [ ] Task 10: ChinaMap 增强（省份着色 + 事件标注 + 交互）
+- [ ] Task 11: /map 页面集成 + 首页增强
