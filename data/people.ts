@@ -152,6 +152,56 @@ export const people: Person[] = [
       },
     ],
   },
+  {
+    id: 'mao-zedong',
+    name: '毛泽东',
+    birthYear: 1893,
+    deathYear: 1976,
+    biography: '中国共产党、中国人民解放军、中华人民共和国的主要缔造者，文化大革命的发动者。',
+    affiliations: [],
+    sources: [{ title: '《毛泽东传》', type: 'academic', date: '2003-01-01' }],
+  },
+  {
+    id: 'lin-biao',
+    name: '林彪',
+    birthYear: 1907,
+    deathYear: 1971,
+    biography: '中共中央副主席，毛泽东的接班人，1971 年九一三事件中坠机身亡。',
+    affiliations: [],
+    sources: [{ title: '《林彪传》', type: 'academic', date: '2000-01-01' }],
+  },
+  {
+    id: 'yao-wenyuan',
+    name: '姚文元',
+    birthYear: 1931,
+    deathYear: 2005,
+    biography: '中央文革小组成员，"四人帮"成员，笔杆子。',
+    affiliations: [
+      { factionId: 'central-cultural-revolution-group', startDate: '1966-05-28', endDate: '1976-10-06', role: '成员' },
+    ],
+    sources: [{ title: '《姚文元传》', type: 'academic', date: '2000-01-01' }],
+  },
+  {
+    id: 'kang-sheng',
+    name: '康生',
+    birthYear: 1898,
+    deathYear: 1975,
+    biography: '中央文革小组顾问，在文革中负责"抓叛徒"等工作，迫害大批干部。',
+    affiliations: [
+      { factionId: 'central-cultural-revolution-group', startDate: '1966-05-28', endDate: '1975-12-16', role: '顾问' },
+    ],
+    sources: [{ title: '《康生传》', type: 'academic', date: '2000-01-01' }],
+  },
+  {
+    id: 'qi-benyu',
+    name: '戚本禹',
+    birthYear: 1931,
+    biography: '毛泽东秘书，中央文革小组成员，1968 年被隔离审查。',
+    affiliations: [
+      { factionId: 'central-cultural-revolution-group', startDate: '1966-05-28', endDate: '1968-01-01', role: '成员' },
+    ],
+    sources: [{ title: '《戚本禹回忆录》', type: 'memoir', date: '2016-01-01' }],
+  },
 ];
 
 export default people;
