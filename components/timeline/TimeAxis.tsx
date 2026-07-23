@@ -12,6 +12,7 @@
 
 'use client';
 
+import { useEffect } from 'react';
 import { useTimeStore } from '@/lib/store';
 
 export default function TimeAxis() {
@@ -20,6 +21,23 @@ export default function TimeAxis() {
 
   const minDate = '1966-01-01';
   const maxDate = '1976-10-31';
+
+  // 播放逻辑：按 speed × 30 天/秒 推进日期，到达终点自动停止
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      const next = new Date(currentDate);
+      next.setDate(next.getDate() + speed * 30);
+      const maxMs = new Date(maxDate).getTime();
+      if (next.getTime() >= maxMs) {
+        setDate(maxDate);
+        togglePlay(); // 到达终点自动暂停
+      } else {
+        setDate(next.toISOString().slice(0, 10));
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isPlaying, speed, currentDate, setDate, togglePlay]);
 
   const dateToPercent = (date: string): number => {
     const d = new Date(date).getTime();
