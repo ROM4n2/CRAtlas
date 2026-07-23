@@ -28,7 +28,7 @@ echarts.use([
   CanvasRenderer,
 ]);
 import { useTimeStore } from '@/lib/store';
-import { getRegionControl, getEventsByDate, getFactionColor, getFactionType } from '@/lib/data';
+import { getRegionControl, getEventsByDate, getFactionColor, getFactionType, getRegionCoordinates } from '@/lib/data';
 import type { Event } from '@/lib/types';
 
 interface ChinaMapProps {
@@ -55,14 +55,21 @@ export default function ChinaMap({ onEventSelect }: ChinaMapProps) {
       },
     }));
 
-    const majorEvents = events.filter((e) => e.significance === 'major');
-    const markPoints = majorEvents.map((e) => ({
-      name: e.id,
-      coord: [0, 0] as [number, number],
-      symbolSize: 8,
-      itemStyle: { color: '#F59E0B' },
-      eventId: e.id,
-    }));
+    // 事件散点——按省份中心坐标定位，按重要性分级大小
+    const sizeBySignificance = { major: 12, significant: 8, minor: 5 };
+    const markPoints = events
+      .map((e) => {
+        const coord = getRegionCoordinates(e.location.regionId);
+        if (!coord) return null;
+        return {
+          name: e.id,
+          coord,
+          symbolSize: sizeBySignificance[e.significance],
+          itemStyle: { color: '#F59E0B' },
+          eventId: e.id,
+        };
+      })
+      .filter((p): p is NonNullable<typeof p> => p !== null);
 
     chart.setOption({
       title: {

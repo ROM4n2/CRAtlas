@@ -202,6 +202,16 @@ export function getRegion(id: string): Region | undefined {
 }
 
 /**
+ * 获取地区中心坐标（[lng, lat]），用于地图事件散点定位。
+ *
+ * @param regionId - 地区 ID
+ * @returns [lng, lat] 坐标，未找到返回 undefined
+ */
+export function getRegionCoordinates(regionId: string): [number, number] | undefined {
+  return regions.find((r) => r.id === regionId)?.coordinates;
+}
+
+/**
  * 根据派系类型返回对应颜色（用于地图着色和图例）。
  *
  * @param factionType - 派系类型

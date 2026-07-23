@@ -70,6 +70,7 @@ export interface Region {
   name: string;
   level: 'province' | 'city' | 'district';
   parentId?: string;
+  coordinates?: [number, number]; // [lng, lat] 省份中心坐标（用于地图标注）
 }
 
 export interface Relationship {
