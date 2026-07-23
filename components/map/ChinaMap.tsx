@@ -13,8 +13,20 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import * as echarts from 'echarts';
+// ECharts 按需引入（tree-shaking）：仅加载 map 图表所需模块
+import * as echarts from 'echarts/core';
+import { MapChart } from 'echarts/charts';
+import { GeoComponent, TooltipComponent, TitleComponent } from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
 import chinaGeoJson from '@/public/china.json';
+
+echarts.use([
+  MapChart,
+  GeoComponent,
+  TooltipComponent,
+  TitleComponent,
+  CanvasRenderer,
+]);
 import { useTimeStore } from '@/lib/store';
 import { getRegionControl, getEventsByDate, getFactionColor, getFactionType } from '@/lib/data';
 import type { Event } from '@/lib/types';
