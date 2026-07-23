@@ -292,6 +292,24 @@ export const events: Event[] = [
     ],
   },
   {
+    id: 'nixon-visit-1972',
+    title: '尼克松访华',
+    alias: ['尼克松访华', '上海公报'],
+    date: '1972-02-21',
+    endDate: '1972-02-28',
+    location: { regionId: 'beijing', specific: '北京' },
+    description:
+      '美国总统尼克松应邀访华，毛泽东会见尼克松，周恩来全程主持会谈。2 月 28 日中美双方在上海发表《上海公报》，标志两国关系开始正常化。这是文革期间最具国际影响的外交事件，改变了冷战格局。',
+    participants: ['mao-zedong', 'zhou-enlai'],
+    factionIds: [],
+    relatedEventIds: [],
+    significance: 'major',
+    sources: [
+      { title: '《上海公报》', type: 'official', date: '1972-02-28' },
+      { title: '《尼克松回忆录》', type: 'memoir', date: '1978-01-01' },
+    ],
+  },
+  {
     id: 'april-5th-movement-1976',
     title: '四五运动（天安门事件）',
     alias: ['四五运动', '天安门事件'],
