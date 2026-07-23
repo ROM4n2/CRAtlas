@@ -1,5 +1,7 @@
 # CRAtlas
 
+[中文文档](README.zh.md) | [English](README.md)
+
 CRAtlas (formerly CRMap) is a static-site web application for visualizing the evolution of rebel and conservative factions during the Cultural Revolution (1966–1976) through interactive maps, timelines, and relationship graphs. It is built with Next.js, TypeScript, and Tailwind CSS, and is deployed to GitHub Pages as a fully static export.
 
 ## Project Overview
