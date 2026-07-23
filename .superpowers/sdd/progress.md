@@ -45,3 +45,15 @@
 - [x] Task 6: 关系图页面 — b94e106 (6/6 页面, build pass)
 - [x] Task 7: 组件文档 — c0551a2 (components/graph/README.md)
 - [x] Task 8: 最终验证与集成 — 2a2cc31 (33 tests, 6/6 页面, tsc clean)
+
+## Phase 3: 详情页与内容填充 — COMPLETE (9 commits, e64d620..7d2e7e8)
+
+- [x] Task 1: 史料出处组件 — e64d620 (SourceList.tsx, build pass)
+- [x] Task 2: 全局搜索弹窗 — 60acab1 + 8020b25 fix (SearchModal.tsx, Cmd+K)
+- [x] Task 3: 事件详情页 — 5e8cde7 (/event/[id], 10 SSG 页面)
+- [x] Task 4: 人物详情页 — 7c9ba27 (/person/[id], 11 SSG 页面)
+- [x] Task 5: 派系详情页 — 141ac2b (/faction/[id], 4 SSG 页面)
+- [x] Task 6: 时间轴视图页 — 85901fc (/timeline + EventCard.tsx)
+- [x] Task 7: 关于页 — 4860454 (/about)
+- [x] Task 8: 内容扩充 — cb45533 + 7d2e7e8 fix (18 事件/18 人物/7 派系/19 关系)
+- [x] Task 9: 最终验证与集成 — 无修复 (33 tests, 51 静态页面, tsc clean)
