@@ -47,6 +47,51 @@ export default function AboutPage() {
           <li>搜索：按 Cmd+K 打开全局搜索</li>
         </ul>
       </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-800">贡献指南</h2>
+        <p className="text-gray-600 mt-2">
+          本项目欢迎社区贡献。无论是否熟悉 Git，您都可以参与纠错与补充。
+        </p>
+
+        <h3 className="text-base font-semibold text-gray-700 mt-4">低门槛入口（推荐）</h3>
+        <p className="text-gray-600 mt-1">
+          在每个详情页底部点击"建议修正"按钮，将跳转至 GitHub Issues 并自动预填模板。您只需填写文字描述，无需了解 Git 操作。
+          也可以直接
+          <a
+            href="https://github.com/ROM4n2/CRAtlas/issues/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline mx-1"
+          >
+            创建新 Issue
+          </a>
+          提交建议。
+        </p>
+
+        <h3 className="text-base font-semibold text-gray-700 mt-4">正式入口</h3>
+        <p className="text-gray-600 mt-1">
+          熟悉 Git 的贡献者可通过
+          <a
+            href="https://github.com/ROM4n2/CRAtlas/pulls"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline mx-1"
+          >
+            Pull Request
+          </a>
+          提交修改。请在 PR 描述中注明修改内容与史料来源。
+        </p>
+
+        <h3 className="text-base font-semibold text-gray-700 mt-4">Issue 模板说明</h3>
+        <p className="text-gray-600 mt-1">提交 Issue 时，请尽量包含以下信息：</p>
+        <ul className="text-gray-600 mt-2 list-disc list-inside space-y-1">
+          <li>问题类型：修正 / 补充 / 新增</li>
+          <li>涉及实体 ID（如人物、派系、事件标识）</li>
+          <li>建议内容：具体描述您期望的修改</li>
+          <li>史料来源：支持您建议的文献、档案或其他出处</li>
+        </ul>
+      </section>
     </div>
   );
 }
