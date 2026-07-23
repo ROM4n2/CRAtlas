@@ -10,8 +10,13 @@
 |------|----------|------|
 | `/` | `app/page.tsx` | 首页：项目简介 + 三大视图入口（地图/时间轴/关系图） |
 | `/map` | `app/map/page.tsx` | 地图视图：中国地图 + 时间轴 + 事件侧边栏 + 图例 + 弹出卡片 |
-
-> 首页中 `/timeline` 和 `/graph` 两个链接指向计划中的路由，尚未实现。
+| `/timeline` | `app/timeline/page.tsx` | 时间轴视图：事件卡片 + 时间轴导航 |
+| `/graph` | `app/graph/page.tsx` | 关系图视图：Cytoscape 图谱 + 筛选 + 节点详情 |
+| `/about` | `app/about/page.tsx` | 关于页：项目介绍与数据来源 |
+| `/event/[id]` | `app/event/[id]/page.tsx` | 事件详情页（SSG 动态路由） |
+| `/person/[id]` | `app/person/[id]/page.tsx` | 人物详情页（SSG 动态路由） |
+| `/faction/[id]` | `app/faction/[id]/page.tsx` | 派系详情页（SSG 动态路由） |
+| `*` | `app/not-found.tsx` | 自定义 404 页面（未匹配路由时自动渲染） |
 
 ## 布局
 
