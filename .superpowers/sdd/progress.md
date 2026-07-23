@@ -1,40 +1,44 @@
 # SDD Progress Ledger — CRAtlas
 
-## Phase 0 — COMPLETE
+## Phase 0 — COMPLETE (12 commits, 8494a34..8bda00b)
 
-## Tasks
+- Task 1: 项目脚手架 — df242cb
+- Task 2: 类型定义 — 5bd488c
+- Task 3: 示例数据 — 45f6c16
+- Task 4: 数据查询层 — 09b6125
+- Task 5: 状态管理 — 44dc135
+- Task 6: GeoJSON — fb1b86c
+- Task 7: GitHub Actions — c1018df
+- Task 8: 页面骨架 — 7412f95
+- Task 9: ECharts 地图 — 4ee06ea
+- Task 10: CLAUDE.md — da3a5c3
+- Task 11: 可行性预研 — 7911626
 
-- [x] Task 1: 项目脚手架 — complete (b33aeff..df242cb, review clean)
-- [x] Task 2: 类型定义 — complete (df242cb..5bd488c, tsc clean)
-- [x] Task 3: 示例数据 — complete (5bd488c..45f6c16, tsc clean)
-- [x] Task 4: 数据查询层 — complete (45f6c16..09b6125, 8/8 tests)
-- [x] Task 5: 状态管理 — complete (09b6125..44dc135, 13/13 tests)
-- [x] Task 6: GeoJSON — complete (44dc135..fb1b86c, 582KB/35 features)
-- [x] Task 7: GitHub Actions — complete (fb1b86c..c1018df)
-- [x] Task 8: 页面骨架 — complete (c1018df..7412f95, build 3 routes)
-- [x] Task 9: ECharts 地图 — complete (7412f95..4ee06ea, build 5/5 pages)
-- [x] Task 10: CLAUDE.md — complete (4ee06ea..da3a5c3, build+13/13 tests)
-- [x] Task 11: 可行性预研 — complete (da3a5c3..7911626, 降级A方案)
+## Phase 1: 核心可视化 — FILES CREATED, NEEDS BASH VERIFY
 
-## Findings Buffer (Minor, non-blocking)
+- [x] Task 1: 修复测试架构违规 — 096206c (24/24 tests ✅)
+- [x] Task 2: 修复北京重叠 — 9a99821
+- [x] Task 3: Error Boundary — 35b17d1 (build ✅)
+- [x] Task 4: 补齐数据 — 789ceaa (10事件/11人物)
+- [x] Task 5: 辅助函数 — f41f0c8 (tsc ✅)
+- [x] Task 6: TimeAxis.tsx — 文件已创建，待验证提交
+- [x] Task 7: MapLegend.tsx — 文件已创建，待验证提交
+- [x] Task 8: EventPopup.tsx — 文件已创建，待验证提交
+- [x] Task 9: EventSidebar.tsx — 文件已创建，待验证提交
+- [x] Task 10: ChinaMap.tsx + README.md — 文件已创建，待验证提交
+- [x] Task 11: app/map/page.tsx + app/page.tsx — 文件已创建，待验证提交
 
-- T1: package.json name "crmap" vs project rename CRAtlas — align later
-- T1: no "engines" field for Node ≥ 18.17.0
-- T1: no .gitattributes for CRLF handling on Windows
-- T1: config files lack @file/@brief headers
-- T9: ECharts full import 622kB — optimize in Phase 1 (tree-shaking)
-- T11: web search unavailable during feasibility research — verify sources in Phase 1
+## 待 Bash 恢复后执行
 
-## Phase 1: 核心可视化
+1. 提交文件命名整理（.git add .superpowers/sdd/）
+2. npm run build（验证全部 Task 6-11 构建）
+3. npx jest（验证测试仍通过）
+4. git add + commit 所有新文件（Task 6 到 Task 11，共 6 个 commit）
 
-- [ ] Task 1: 修复测试架构违规 + 增加查询函数测试
-- [ ] Task 2: 修复北京地区控制记录重叠
-- [ ] Task 3: 添加 React Error Boundary
-- [ ] Task 4: 扩展示例数据（补齐事件/人物）
-- [ ] Task 5: getFactionColor/getFactionName/getFactionType 辅助函数
-- [ ] Task 6: 时间轴组件 TimeAxis.tsx
-- [ ] Task 7: 地图图例 MapLegend.tsx
-- [ ] Task 8: 事件弹出卡片 EventPopup.tsx
-- [ ] Task 9: 事件侧边栏 EventSidebar.tsx
-- [ ] Task 10: ChinaMap 增强（省份着色 + 事件标注 + 交互）
-- [ ] Task 11: /map 页面集成 + 首页增强
+## Findings Buffer (Minor)
+
+- T1(Phase0): package.json name "crmap" vs CRAtlas
+- T1(Phase0): no "engines" field
+- T1(Phase0): no .gitattributes for CRLF
+- T9(Phase0): ECharts full import 622kB — tree-shake later
+- 安全分类器间歇性不可用，主代理需补验补提交
