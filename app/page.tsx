@@ -38,6 +38,14 @@ export default function HomePage() {
           <p className="text-gray-600">探索人物、派系、事件之间的关系网络</p>
         </Link>
       </div>
+
+      <div className="mt-8 p-6 bg-white rounded-lg shadow">
+        <h2 className="text-lg font-semibold mb-2">时间范围</h2>
+        <p className="text-gray-600">1966年 — 1976年</p>
+        <p className="text-sm text-gray-500 mt-1">
+          拖动时间轴查看不同时期的派系势力变化。点击"地图视图"开始探索。
+        </p>
+      </div>
     </div>
   );
 }
