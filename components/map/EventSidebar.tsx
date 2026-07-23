@@ -26,18 +26,23 @@ export default function EventSidebar({ events, onEventClick }: EventSidebarProps
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="bg-white rounded-lg shadow overflow-hidden" role="region" aria-label="事件列表侧边栏">
       <div className="px-4 py-3 border-b border-gray-100">
-        <h3 className="font-medium text-gray-700 text-sm">
+        <h3 className="font-medium text-gray-700 text-sm" id="event-sidebar-title">
           事件列表 ({events.length})
         </h3>
       </div>
-      <div className="max-h-96 overflow-y-auto">
+      <div
+        className="max-h-96 overflow-y-auto"
+        role="list"
+        aria-labelledby="event-sidebar-title"
+      >
         {events.map((event) => (
           <div
             key={event.id}
             className="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition"
             onClick={() => onEventClick(event.id)}
+            role="listitem"
           >
             <div className="flex justify-between items-start">
               <h4 className="text-sm font-medium text-gray-900 line-clamp-1">
@@ -64,6 +69,7 @@ export default function EventSidebar({ events, onEventClick }: EventSidebarProps
               href={`/event/${event.id}`}
               className="text-xs text-blue-600 hover:underline mt-1 inline-block"
               onClick={(e) => e.stopPropagation()}
+              aria-label={`查看事件「${event.title}」详情`}
             >
               查看详情 →
             </Link>

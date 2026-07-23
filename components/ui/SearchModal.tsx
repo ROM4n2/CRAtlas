@@ -56,9 +56,17 @@ export default function SearchModal() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 bg-black/50">
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center pt-24 bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="search-modal-title"
+    >
       <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden">
         <div className="flex items-center border-b border-gray-200 px-4">
+          <h2 id="search-modal-title" className="sr-only">
+            全局搜索
+          </h2>
           <input
             type="text"
             value={query}
@@ -66,16 +74,29 @@ export default function SearchModal() {
             placeholder="搜索人物、事件、派系..."
             className="flex-1 py-3 text-sm outline-none"
             autoFocus
+            role="combobox"
+            aria-expanded={results.length > 0}
+            aria-controls="search-results-list"
+            aria-label="搜索人物、事件、派系"
           />
-          <span className="text-xs text-gray-400">ESC 关闭</span>
+          <span className="text-xs text-gray-400" aria-hidden="true">ESC 关闭</span>
         </div>
         {results.length > 0 && (
-          <div className="max-h-80 overflow-y-auto">
-            {results.map((result) => (
+          <div
+            id="search-results-list"
+            className="max-h-80 overflow-y-auto"
+            role="listbox"
+            aria-label="搜索结果"
+          >
+            {results.map((result, index) => (
               <div
                 key={`${result.type}-${result.id}`}
                 className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50"
                 onClick={() => handleSelect(result)}
+                role="option"
+                aria-selected={false}
+                aria-posinset={index + 1}
+                aria-setsize={results.length}
               >
                 <div className="flex justify-between">
                   <span className="text-sm font-medium text-gray-900">
@@ -93,7 +114,9 @@ export default function SearchModal() {
           </div>
         )}
         {query.trim() && results.length === 0 && (
-          <div className="px-4 py-3 text-sm text-gray-500">无匹配结果</div>
+          <div className="px-4 py-3 text-sm text-gray-500" role="status" aria-live="polite">
+            无匹配结果
+          </div>
         )}
       </div>
     </div>

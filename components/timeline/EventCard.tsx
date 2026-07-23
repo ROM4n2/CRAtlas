@@ -15,7 +15,11 @@ interface EventCardProps {
 
 export default function EventCard({ event }: EventCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow p-4 border border-gray-100">
+    <div
+      className="bg-white rounded-lg shadow p-4 border border-gray-100"
+      role="article"
+      aria-label={`事件：${event.title}`}
+    >
       <div className="flex justify-between items-start">
         <h3 className="font-medium text-gray-900">{event.title}</h3>
         <span
@@ -25,6 +29,13 @@ export default function EventCard({ event }: EventCardProps) {
               : event.significance === 'significant'
               ? 'bg-yellow-100 text-yellow-700'
               : 'bg-gray-100 text-gray-600'
+          }`}
+          aria-label={`重要程度：${
+            event.significance === 'major'
+              ? '重大'
+              : event.significance === 'significant'
+              ? '重要'
+              : '一般'
           }`}
         >
           {event.significance === 'major'
@@ -41,6 +52,7 @@ export default function EventCard({ event }: EventCardProps) {
       <Link
         href={`/event/${event.id}`}
         className="text-xs text-blue-600 hover:underline mt-2 inline-block"
+        aria-label={`查看事件「${event.title}」详情`}
       >
         查看详情 →
       </Link>

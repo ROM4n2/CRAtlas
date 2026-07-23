@@ -19,7 +19,11 @@ interface EventPopupProps {
 
 export default function EventPopup({ event, onClose }: EventPopupProps) {
   return (
-    <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-4 w-80 z-10 border border-gray-200">
+    <div
+      className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-4 w-80 z-10 border border-gray-200"
+      role="region"
+      aria-label={`事件详情：${event.title}`}
+    >
       <button
         onClick={onClose}
         className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
@@ -33,7 +37,7 @@ export default function EventPopup({ event, onClose }: EventPopupProps) {
         {event.description}
       </p>
       {event.factionIds.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-3">
+        <div className="flex flex-wrap gap-1 mb-3" role="group" aria-label="相关派系">
           {event.factionIds.map((id) => (
             <span
               key={id}
@@ -47,6 +51,7 @@ export default function EventPopup({ event, onClose }: EventPopupProps) {
       <Link
         href={`/event/${event.id}`}
         className="text-sm text-blue-600 hover:underline"
+        aria-label={`查看事件「${event.title}」详情`}
       >
         查看详情 →
       </Link>

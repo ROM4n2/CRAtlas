@@ -62,7 +62,7 @@ export default function TimeAxis() {
   };
 
   return (
-    <div className="w-full bg-white border-t border-gray-200 px-3 md:px-4 py-2 md:py-3">
+    <div className="w-full bg-white border-t border-gray-200 px-3 md:px-4 py-2 md:py-3" role="region" aria-label="时间轴控制">
       {/* 移动端：垂直堆叠；桌面端：水平排列 */}
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
         {/* 第一行：播放按钮 + 速度选择 */}
@@ -75,7 +75,7 @@ export default function TimeAxis() {
             {isPlaying ? '⏸' : '▶'}
           </button>
 
-          <div className="flex gap-1 text-xs">
+          <div className="flex gap-1 text-xs" role="group" aria-label="播放速度">
             {[1, 2, 4].map((s) => (
               <button
                 key={s}
@@ -85,6 +85,8 @@ export default function TimeAxis() {
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
+                aria-label={`${s}倍速`}
+                aria-pressed={speed === s}
               >
                 {s}x
               </button>
@@ -92,7 +94,7 @@ export default function TimeAxis() {
           </div>
 
           {/* 桌面端日期标签 */}
-          <span className="hidden md:inline text-xs text-gray-500 whitespace-nowrap">
+          <span className="hidden md:inline text-xs text-gray-500 whitespace-nowrap" aria-hidden="true">
             1966 — 1976
           </span>
         </div>
@@ -107,8 +109,12 @@ export default function TimeAxis() {
             value={currentPercent}
             onChange={(e) => setDate(percentToDate(parseFloat(e.target.value)))}
             className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+            aria-label="时间轴滑块"
+            aria-valuemin={1966}
+            aria-valuemax={1976}
+            aria-valuetext={formatDate(currentDate)}
           />
-          <span className="text-xs font-medium text-blue-600 whitespace-nowrap shrink-0">
+          <span className="text-xs font-medium text-blue-600 whitespace-nowrap shrink-0" aria-live="polite">
             {formatDate(currentDate)}
           </span>
         </div>
