@@ -15,6 +15,7 @@
     "download-geojson": "bash scripts/download-geojson.sh"
   },
   "dependencies": {
+    "@giscus/react": "^3.1.0",
     "cytoscape": "^3.34.0",
     "cytoscape-dagre": "^2.5.0",
     "echarts": "^5.6.0",

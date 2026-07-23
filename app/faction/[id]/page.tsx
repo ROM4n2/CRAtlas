@@ -11,6 +11,7 @@ import type { Metadata } from 'next';
 import { factions } from '@/data/factions';
 import { getFaction } from '@/lib/data';
 import SourceList from '@/components/ui/SourceList';
+import GiscusComments from '@/components/comments/GiscusComments';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const faction = getFaction(params.id);
@@ -51,6 +52,8 @@ export default function FactionPage({ params }: { params: { id: string } }) {
         <section>
           <SourceList sources={faction.sources} />
         </section>
+
+        <GiscusComments />
       </div>
     </div>
   );

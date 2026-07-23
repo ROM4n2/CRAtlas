@@ -12,6 +12,7 @@ import type { Metadata } from 'next';
 import { people } from '@/data/people';
 import { getPerson, getFactionName } from '@/lib/data';
 import SourceList from '@/components/ui/SourceList';
+import GiscusComments from '@/components/comments/GiscusComments';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const person = getPerson(params.id);
@@ -68,6 +69,8 @@ export default function PersonPage({ params }: { params: { id: string } }) {
         <section>
           <SourceList sources={person.sources} />
         </section>
+
+        <GiscusComments />
       </div>
     </div>
   );
