@@ -19,6 +19,8 @@ import {
   getFaction,
   getRegion,
   getRegionCoordinates,
+  getGraphNodes,
+  getGraphEdges,
 } from './data';
 
 // 辅助：通过查询函数获取测试数据（不直接 import）
@@ -171,5 +173,42 @@ describe('getRegionCoordinates', () => {
 
   it('不存在的 ID 应返回 undefined', () => {
     expect(getRegionCoordinates('nonexistent')).toBeUndefined();
+  });
+});
+
+describe('getGraphNodes', () => {
+  it('应返回所有节点（默认）', () => {
+    const nodes = getGraphNodes();
+    expect(nodes.length).toBeGreaterThan(0);
+  });
+
+  it('应按类型过滤', () => {
+    const persons = getGraphNodes({ types: ['person'] });
+    expect(persons.every((n) => n.type === 'person')).toBe(true);
+  });
+
+  it('事件节点应按日期过滤', () => {
+    const nodes = getGraphNodes({ types: ['event'], date: '1966-06-01' });
+    expect(nodes.length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe('getGraphEdges', () => {
+  it('应返回所有边', () => {
+    const edges = getGraphEdges();
+    expect(edges.length).toBeGreaterThan(0);
+  });
+
+  it('应按类型过滤', () => {
+    const memberships = getGraphEdges({ type: 'membership' });
+    expect(memberships.every((e) => e.type === 'membership')).toBe(true);
+  });
+
+  it('边应包含样式属性', () => {
+    const edges = getGraphEdges();
+    edges.forEach((e) => {
+      expect(e.style).toBeDefined();
+      expect(e.style['line-color']).toBeDefined();
+    });
   });
 });

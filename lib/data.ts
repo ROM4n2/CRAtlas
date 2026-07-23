@@ -26,6 +26,10 @@ import type {
   SearchResult,
   Affiliation,
   FactionType,
+  GraphNode,
+  GraphEdge,
+  CytoscapeEdgeStyle,
+  RelationshipType,
 } from '@/lib/types';
 
 /**
@@ -245,4 +249,96 @@ export function getFactionName(factionId: string): string {
  */
 export function getFactionType(factionId: string): FactionType | undefined {
   return factions.find((f) => f.id === factionId)?.factionType;
+}
+
+/**
+ * 获取关系图节点列表（人物/事件/派系）。
+ *
+ * @param options - 过滤选项
+ * @returns GraphNode 数组
+ */
+export function getGraphNodes(options?: {
+  date?: string;
+  types?: ('person' | 'event' | 'faction')[];
+}): GraphNode[] {
+  const { date, types } = options ?? {};
+  const nodeTypes = types ?? ['person', 'event', 'faction'];
+  const nodes: GraphNode[] = [];
+
+  if (nodeTypes.includes('person')) {
+    for (const p of people) {
+      nodes.push({
+        id: p.id,
+        label: p.name,
+        type: 'person',
+        color: '#3B82F6',
+        shape: 'circle',
+      });
+    }
+  }
+
+  if (nodeTypes.includes('event')) {
+    for (const e of events) {
+      if (date && e.date > date) continue;
+      nodes.push({
+        id: e.id,
+        label: e.title,
+        type: 'event',
+        color: '#F59E0B',
+        shape: 'diamond',
+      });
+    }
+  }
+
+  if (nodeTypes.includes('faction')) {
+    for (const f of factions) {
+      nodes.push({
+        id: f.id,
+        label: f.name,
+        type: 'faction',
+        factionType: f.factionType,
+        color: getFactionColor(f.factionType),
+        shape: 'square',
+      });
+    }
+  }
+
+  return nodes;
+}
+
+/**
+ * 获取关系图边列表（带 Cytoscape 样式）。
+ *
+ * @param filter - 过滤选项
+ * @returns GraphEdge 数组
+ */
+export function getGraphEdges(filter?: {
+  type?: RelationshipType;
+  date?: string;
+}): GraphEdge[] {
+  const relationships = getRelationships(filter);
+  return relationships.map((r) => ({
+    id: r.id,
+    source: r.from,
+    target: r.to,
+    label: r.description,
+    type: r.type,
+    style: getEdgeStyle(r.type),
+  }));
+}
+
+/**
+ * 根据关系类型返回 Cytoscape 边样式。
+ */
+function getEdgeStyle(type: RelationshipType): CytoscapeEdgeStyle {
+  switch (type) {
+    case 'membership':
+      return { 'line-color': '#3B82F6', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier' };
+    case 'causality':
+      return { 'line-color': '#EF4444', 'line-style': 'dashed', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier' };
+    case 'faction-interaction':
+      return { 'line-color': '#9333EA', 'line-width': 3, 'target-arrow-shape': 'triangle', 'source-arrow-shape': 'triangle', 'curve-style': 'bezier' };
+    case 'social':
+      return { 'line-color': '#6B7280', 'line-style': 'dotted', 'target-arrow-shape': 'none', 'curve-style': 'bezier' };
+  }
 }
