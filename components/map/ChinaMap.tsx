@@ -153,5 +153,5 @@ export default function ChinaMap({ onEventSelect }: ChinaMapProps) {
     updateMap();
   }, [updateMap]);
 
-  return <div ref={chartRef} style={{ width: '100%', height: '600px' }} />;
+  return <div ref={chartRef} className="w-full h-full" />;
 }
