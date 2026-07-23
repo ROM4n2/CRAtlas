@@ -1,6 +1,6 @@
 # CRAtlas Phase 1 — 核心可视化实施计划
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking..
 
 **Goal:** 实现地图省份着色 + 时间轴组件 + 时间轴↔地图联动 + 事件标注弹出 + 修复 Phase 0 的 3 个 Important 问题，交付可用的地图视图。
 
