@@ -1,16 +1,17 @@
 # CRAtlas
 
-CRAtlas (formerly CRMap) is a static-site web application for visualizing the Cultural Revolution (1966–1969) through interactive maps, timelines, and relationship graphs. It is built with Next.js, TypeScript, and Tailwind CSS, and is deployed to GitHub Pages as a fully static export.
+CRAtlas (formerly CRMap) is a static-site web application for visualizing the evolution of rebel and conservative factions during the Cultural Revolution (1966–1976) through interactive maps, timelines, and relationship graphs. It is built with Next.js, TypeScript, and Tailwind CSS, and is deployed to GitHub Pages as a fully static export.
 
 ## Project Overview
 
 CRAtlas renders historical data as:
 
 - **Choropleth maps** — provincial control (rebel / conservative / military / contested) over time, powered by ECharts.
-- **Timeline** — key events plotted chronologically.
+- **Timeline** — a draggable/playable timeline controlling the map and graph views.
 - **Relationship graph** — actor/organization connections rendered with Cytoscape.
+- **Detail pages** — event, person, and faction detail pages with sources and comments.
 
-All data is static (GeoJSON + JSON) bundled at build time. There is no backend, no database, and no runtime API calls.
+All data is static (TypeScript modules + GeoJSON) bundled at build time. There is no backend, no database, and no runtime API calls.
 
 ## Tech Stack
 
@@ -87,13 +88,49 @@ cp .env.example .env.local
 ## Project Structure
 
 ```
-app/            # Next.js App Router pages & layouts
-components/     # Shared React components
-data/           # Static GeoJSON + JSON datasets
-lib/            # Helper functions & hooks
-scripts/        # Build/download scripts
-docs/           # Project documentation & specs
+app/                # Next.js App Router pages & layouts
+  event/[id]/       # Event detail pages
+  person/[id]/      # Person detail pages
+  faction/[id]/     # Faction detail pages
+  map/              # Map view page
+  graph/            # Relationship graph page
+  timeline/         # Timeline view page
+  about/            # About page
+components/         # Shared React components
+  map/              # Map components (ChinaMap, MapLegend, EventPopup, EventSidebar)
+  graph/            # Graph components (FactionGraph, GraphFilter, NodeDetail)
+  timeline/         # Timeline components (TimeAxis, EventCard)
+  layout/           # Layout components (Navbar)
+  ui/               # UI components (ErrorBoundary, SearchModal, SourceList, NotesPanel)
+  comments/         # Comment components (GiscusComments)
+data/               # Static TypeScript datasets (events, people, factions, regions, relationships)
+lib/                # Core library (types, data queries, state store, notes)
+public/             # Static assets (china.json GeoJSON)
+docs/               # Project documentation & specs
+.superpowers/       # SDD progress ledger & task briefs/reports
+.github/            # Issue templates & PR template
 ```
+
+## Data Model
+
+CRAtlas uses five core entity types, all defined in `lib/types.ts`:
+
+| Entity | Count | Description |
+| --- | --- | --- |
+| Events | 18 | Historical events with date, location, participants, significance |
+| People | 18 | Key figures with biography and faction affiliations |
+| Factions | 7 | Rebel/conservative/military organizations |
+| Regions | 34 | Chinese provinces with map coordinates |
+| Relationships | 19 | Membership, causality, faction interaction, social ties |
+
+## Contributing
+
+Contributions are welcome via two paths:
+
+- **Low-threshold**: Open a GitHub Issue using our [correction](https://github.com/ROM4n2/CRAtlas/issues/new?template=correction.md) or [addition](https://github.com/ROM4n2/CRAtlas/issues/new?template=addition.md) template.
+- **Formal**: Submit a Pull Request. See [PR template](https://github.com/ROM4n2/CRAtlas/blob/main/.github/PULL_REQUEST_TEMPLATE.md).
+
+All contributions must include verifiable historical sources.
 
 ## License
 
