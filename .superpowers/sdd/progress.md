@@ -14,7 +14,7 @@
 - Task 10: CLAUDE.md — da3a5c3
 - Task 11: 可行性预研 — 7911626
 
-## Phase 1: 核心可视化 — COMPLETE (9 commits, f41f0c8..fee1b2b)
+## Phase 1: 核心可视化 — COMPLETE (9 commits, f41f0c8..9851a4e)
 
 - [x] Task 1: 修复测试架构违规 — 096206c (24/24 tests)
 - [x] Task 2: 修复北京重叠 — 9a99821
@@ -28,9 +28,20 @@
 - [x] Task 10: ChinaMap 增强 — 918edce (build pass)
 - [x] Task 11: /map 页面集成 — 149ee95 (build pass)
 
-## 待修复 (Minor)
+## Phase 1 修复 — COMPLETE
 
-- T1(Phase0): package.json name "crmap" vs CRAtlas
-- T1(Phase0): no "engines" field
-- T1(Phase0): no .gitattributes for CRLF
-- T9(Phase0): ECharts full import 622kB — tree-shake later
+- [x] F1: 事件散点坐标 [0,0] → 省份中心 — 149751f (34 省坐标 + 分级大小)
+- [x] F2: 播放逻辑缺失 → setInterval 推进 — b9d6d07 (speed×30天/秒)
+- [x] Minor: package.json name/engines + .gitattributes + ECharts tree-shake — a13624b
+- [x] Docs: app/map/README.md + getRegionCoordinates 测试 — 56e0550
+
+## Phase 2: 关系图 — COMPLETE (8 commits, 1c0a344..2a2cc31)
+
+- [x] Task 1: 安装 Cytoscape 依赖与类型 — 1c0a344 (cytoscape-dagre + @types/cytoscape)
+- [x] Task 2: 图谱数据查询函数 — 7d1d777 (33 tests, +6 新增)
+- [x] Task 3: 关系图核心组件 — 4fa1887 (FactionGraph.tsx + dagre 类型)
+- [x] Task 4: 筛选面板 — f50ebff (GraphFilter.tsx)
+- [x] Task 5: 节点详情侧边栏 — 435a86e (NodeDetail.tsx)
+- [x] Task 6: 关系图页面 — b94e106 (6/6 页面, build pass)
+- [x] Task 7: 组件文档 — c0551a2 (components/graph/README.md)
+- [x] Task 8: 最终验证与集成 — 2a2cc31 (33 tests, 6/6 页面, tsc clean)
