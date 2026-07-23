@@ -1,28 +1,30 @@
-# components/layout
+# components/layout/
 
-## Purpose
+## 职责
 
-This folder contains **layout components** — structural UI pieces that define the
-shell of the application across multiple pages. Examples include:
+布局组件定义应用的页面外壳（chrome），在根布局中被引用一次，为所有路由提供一致的导航与结构框架。属于四层架构中的 **接口层**。
 
-- `Navbar` — top navigation bar with logo and view switching links
-- `Footer` (future) — bottom info bar with credits / version / links
-- `Sidebar` (future) — side panel for filters or secondary navigation
+## 文件清单
 
-These components are **not** tied to a single page; they are consumed by the
-root layout (`app/layout.tsx`) and therefore appear on every route.
+| 文件 | 说明 |
+| --- | --- |
+| `Navbar.tsx` | 顶部导航栏 — Logo + 三大视图入口（地图 / 时间轴 / 关系图）+ 关于页 |
+| `README.md` | 本文件 |
 
-## File List
+<!-- TODO: 后续可能添加 Footer、Sidebar 等全局布局组件 -->
 
-| File            | Description                                                     |
-| --------------- | --------------------------------------------------------------- |
-| `Navbar.tsx`    | Top navigation bar — logo + 三大视图 (地图/时间轴/关系图) + 关于 |
-| `README.md`     | This file — folder documentation                                |
+## 数据流 / 依赖关系
 
-## How They're Used
+```
+app/layout.tsx
+  └─ <Navbar />
+  └─ <main>{children}</main>    ← 页面内容由路由注入
+       └─ page.tsx（地图 / 时间轴 / 关系图 / 关于）
+```
 
-Layout components are imported once into `app/layout.tsx` and rendered around
-the `{children}` slot:
+布局组件通过 `app/layout.tsx` 将导航栏渲染在 `{children}` 外侧，保证所有页面共享同一套外壳，页面自身只关注内容。
+
+## 使用方式
 
 ```tsx
 // app/layout.tsx
@@ -40,14 +42,27 @@ export default function RootLayout({ children }) {
 }
 ```
 
-This guarantees a consistent chrome (nav, footer, etc.) across all pages while
-each page only needs to supply its own content.
+## 组件 API
 
-## Conventions
+### Navbar
 
-- One component per file, named in PascalCase matching the file name.
-- Components are client components only when they use interactivity
-  (`useState`, event handlers, etc.). Purely structural components stay as
-  server components by default.
-- Use Tailwind utility classes for styling; keep custom CSS in `globals.css`
-  CSS variables (e.g. faction colors).
+| Prop | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| （无 props） | — | — | 纯展示组件，使用 `next/link` 导航 |
+
+**技术要点：**
+- 使用 `next/link` 进行客户端路由切换，无页面刷新
+- 当前无 active 高亮指示；后续可基于 `usePathname()` + `clsx` 添加
+
+## 扩展指南
+
+- **添加新页面：** 同步更新 Navbar 中的 `<Link>` 数组
+- **导航项增多（> 5 项）：** 建议抽离为配置数组 + 响应式折叠菜单（移动端 hamburger menu）
+- **Footer 组件：** 如需页脚，在此目录新建 `Footer.tsx`，统一在 `app/layout.tsx` 引入
+- **Active 状态：** 使用 `usePathname()` + `clsx` 实现当前页高亮
+
+## 约定
+
+- 每个文件一个组件，PascalCase 命名，与文件名一致。
+- 仅当组件需要交互性（`useState`、事件处理等）时标记 `'use client'`；纯结构组件保持服务端组件。
+- 样式使用 Tailwind 工具类；自定义样式通过 `globals.css` 中的 CSS 变量（如 faction 颜色）定义。
