@@ -46,6 +46,15 @@
 - [x] Task 7: 组件文档 — c0551a2 (components/graph/README.md)
 - [x] Task 8: 最终验证与集成 — 2a2cc31 (33 tests, 6/6 页面, tsc clean)
 
+## Phase 5: 打磨与发布 — COMPLETE (6 commits, 030784a..b97f221)
+
+- [x] Task 1: 自定义 404 页面 — 030784a (构建通过)
+- [x] Task 2: 移动端适配 — 2bffaf4 + 7e75cca fix (Navbar hamburger + 底部抽屉)
+- [x] Task 3: 无障碍 ARIA — 4f536e8 (6 组件增强)
+- [x] Task 4: SEO meta — e5fbb50 (详情页独立 meta)
+- [x] Task 5: 性能懒加载 — 无需修改 (已有 dynamic + ssr:false)
+- [x] Task 6: 最终验证 — 2134b0f (33 tests, 51 页面, tsc clean)
+
 ## Phase 3: 详情页与内容填充 — COMPLETE (9 commits, e64d620..7d2e7e8)
 
 - [x] Task 1: 史料出处组件 — e64d620 (SourceList.tsx, build pass)
