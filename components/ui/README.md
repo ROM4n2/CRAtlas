@@ -19,7 +19,7 @@
 |------|------|------|
 | `ErrorBoundary.tsx` | React 错误边界，捕获子组件渲染异常防止白屏 | 已实现 |
 | `SourceList.tsx` | 史料出处展示组件——显示文献标题、类型、日期与可选链接 | 已实现 |
-| `SearchModal.tsx` | 全局搜索弹窗——按名称/标签检索实体 | <!-- TODO --> |
+| `SearchModal.tsx` | 全局搜索弹窗——按名称/标签检索实体 | 已实现 |
 | `Tag.tsx` | 派系/事件标签徽章——按类型着色 | <!-- TODO --> |
 | `Loading.tsx` | 加载中指示器（骨架屏 / spinner） | <!-- TODO --> |
 | `Tooltip.tsx` | 悬浮提示组件 | <!-- TODO --> |
