@@ -12,6 +12,7 @@ import type { Metadata } from 'next';
 import { events } from '@/data/events';
 import { getEvent, getPerson, getFactionName } from '@/lib/data';
 import SourceList from '@/components/ui/SourceList';
+import NotesPanel from '@/components/ui/NotesPanel';
 import GiscusComments from '@/components/comments/GiscusComments';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
@@ -99,6 +100,8 @@ export default function EventPage({ params }: { params: { id: string } }) {
         <section>
           <SourceList sources={event.sources} />
         </section>
+
+        <NotesPanel entityId={event.id} entityType="event" />
 
         <GiscusComments />
       </div>
