@@ -1,41 +1,74 @@
 /**
  * @file    ChinaMap.tsx
- * @brief   ECharts 中国地图渲染验证——Phase 0 仅验证地图能正确渲染。
+ * @brief   ECharts 中国地图——省份着色 + 事件散点 + 交互。
  * @author  CRAtlas Team
- * @version 1.0.0
+ * @version 2.0.0
  * @date    2026-07-22
  *
- * @note Phase 0 目标：验证 ECharts 能注册并渲染中国地图轮廓。
- *       省份着色和事件散点在 Phase 1 实现。
+ * @description
+ * 订阅 Zustand store 的 currentDate，根据 getRegionControl 着色省份，
+ * 根据 getEventsByDate 显示事件散点。点击事件散点触发 onEventSelect。
  */
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import * as echarts from 'echarts';
 import chinaGeoJson from '@/public/china.json';
+import { useTimeStore } from '@/lib/store';
+import { getRegionControl, getEventsByDate, getFactionColor, getFactionType } from '@/lib/data';
+import type { Event } from '@/lib/types';
 
-export default function ChinaMap() {
+interface ChinaMapProps {
+  onEventSelect: (event: Event) => void;
+}
+
+export default function ChinaMap({ onEventSelect }: ChinaMapProps) {
   const chartRef = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<echarts.ECharts | null>(null);
+  const currentDate = useTimeStore((s) => s.currentDate);
 
-  useEffect(() => {
-    if (!chartRef.current) return;
+  const updateMap = useCallback(() => {
+    const chart = instanceRef.current;
+    if (!chart) return;
 
-    // 注册中国地图
-    echarts.registerMap('china', chinaGeoJson as never);
+    const regionControl = getRegionControl(currentDate);
+    const events = getEventsByDate(currentDate);
 
-    const chart = echarts.init(chartRef.current);
-    instanceRef.current = chart;
+    const mapData = Object.entries(regionControl).map(([regionId, ctrl]) => ({
+      name: regionId,
+      value: ctrl.strength,
+      itemStyle: {
+        areaColor: getFactionColor(getFactionType(ctrl.factionId)),
+      },
+    }));
+
+    const majorEvents = events.filter((e) => e.significance === 'major');
+    const markPoints = majorEvents.map((e) => ({
+      name: e.id,
+      coord: [0, 0] as [number, number],
+      symbolSize: 8,
+      itemStyle: { color: '#F59E0B' },
+      eventId: e.id,
+    }));
 
     chart.setOption({
       title: {
-        text: '中国地图（Phase 0 验证）',
+        text: `中国地图 — ${currentDate}`,
         left: 'center',
+        textStyle: { fontSize: 14 },
       },
       tooltip: {
         trigger: 'item',
-        formatter: '{b}',
+        formatter: (params: { name: string; value?: number; seriesType?: string }) => {
+          if (params.seriesType === 'map') {
+            const ctrl = regionControl[params.name];
+            if (ctrl) {
+              return `${params.name}<br/>控制强度: ${(ctrl.strength * 100).toFixed(0)}%`;
+            }
+          }
+          return params.name;
+        },
       },
       geo: {
         map: 'china',
@@ -45,11 +78,47 @@ export default function ChinaMap() {
           borderColor: '#9CA3AF',
         },
         emphasis: {
-          itemStyle: {
-            areaColor: '#C084FC',
-          },
+          itemStyle: { areaColor: '#C084FC' },
         },
       },
+      series: [
+        {
+          name: '地区控制',
+          type: 'map',
+          geoIndex: 0,
+          data: mapData,
+          markPoint: {
+            symbol: 'circle',
+            symbolSize: 6,
+            data: markPoints,
+            itemStyle: { color: '#F59E0B' },
+            tooltip: {
+              formatter: (params: { name: string }) => {
+                const ev = events.find((e) => e.id === params.name);
+                return ev ? `${ev.title}<br/>${ev.date}` : params.name;
+              },
+            },
+          },
+        },
+      ],
+    });
+  }, [currentDate]);
+
+  useEffect(() => {
+    if (!chartRef.current) return;
+
+    echarts.registerMap('china', chinaGeoJson as never);
+    const chart = echarts.init(chartRef.current);
+    instanceRef.current = chart;
+
+    chart.on('click', (params: Record<string, unknown>) => {
+      const data = params.data as { eventId?: string } | undefined;
+      if (data?.eventId) {
+        const event = getEventsByDate(currentDate).find(
+          (e) => e.id === data.eventId
+        );
+        if (event) onEventSelect(event);
+      }
     });
 
     const handleResize = () => chart.resize();
@@ -59,7 +128,11 @@ export default function ChinaMap() {
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    updateMap();
+  }, [updateMap]);
 
   return <div ref={chartRef} style={{ width: '100%', height: '600px' }} />;
 }
