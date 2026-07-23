@@ -14,31 +14,23 @@
 - Task 10: CLAUDE.md — da3a5c3
 - Task 11: 可行性预研 — 7911626
 
-## Phase 1: 核心可视化 — FILES CREATED, NEEDS BASH VERIFY
+## Phase 1: 核心可视化 — COMPLETE (9 commits, f41f0c8..fee1b2b)
 
-- [x] Task 1: 修复测试架构违规 — 096206c (24/24 tests ✅)
+- [x] Task 1: 修复测试架构违规 — 096206c (24/24 tests)
 - [x] Task 2: 修复北京重叠 — 9a99821
-- [x] Task 3: Error Boundary — 35b17d1 (build ✅)
+- [x] Task 3: Error Boundary — 35b17d1 (build pass)
 - [x] Task 4: 补齐数据 — 789ceaa (10事件/11人物)
-- [x] Task 5: 辅助函数 — f41f0c8 (tsc ✅)
-- [x] Task 6: TimeAxis.tsx — 文件已创建，待验证提交
-- [x] Task 7: MapLegend.tsx — 文件已创建，待验证提交
-- [x] Task 8: EventPopup.tsx — 文件已创建，待验证提交
-- [x] Task 9: EventSidebar.tsx — 文件已创建，待验证提交
-- [x] Task 10: ChinaMap.tsx + README.md — 文件已创建，待验证提交
-- [x] Task 11: app/map/page.tsx + app/page.tsx — 文件已创建，待验证提交
+- [x] Task 5: 辅助函数 — f41f0c8 (tsc clean)
+- [x] Task 6: TimeAxis.tsx — e2fabda (build pass)
+- [x] Task 7: MapLegend.tsx — f1bece0 (build pass)
+- [x] Task 8: EventPopup.tsx — 7c03be0 (build pass)
+- [x] Task 9: EventSidebar.tsx — 85194f3 (build pass)
+- [x] Task 10: ChinaMap 增强 — 918edce (build pass)
+- [x] Task 11: /map 页面集成 — 149ee95 (build pass)
 
-## 待 Bash 恢复后执行
-
-1. 提交文件命名整理（.git add .superpowers/sdd/）
-2. npm run build（验证全部 Task 6-11 构建）
-3. npx jest（验证测试仍通过）
-4. git add + commit 所有新文件（Task 6 到 Task 11，共 6 个 commit）
-
-## Findings Buffer (Minor)
+## 待修复 (Minor)
 
 - T1(Phase0): package.json name "crmap" vs CRAtlas
 - T1(Phase0): no "engines" field
 - T1(Phase0): no .gitattributes for CRLF
 - T9(Phase0): ECharts full import 622kB — tree-shake later
-- 安全分类器间歇性不可用，主代理需补验补提交
