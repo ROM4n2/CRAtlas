@@ -18,6 +18,7 @@ import {
   getEvent,
   getFaction,
   getRegion,
+  getRegionCoordinates,
 } from './data';
 
 // 辅助：通过查询函数获取测试数据（不直接 import）
@@ -148,5 +149,27 @@ describe('单实体查询', () => {
   it('不存在的 ID 应返回 undefined', () => {
     expect(getPerson('nonexistent')).toBeUndefined();
     expect(getEvent('nonexistent')).toBeUndefined();
+  });
+});
+
+describe('getRegionCoordinates', () => {
+  it('应返回地区中心坐标', () => {
+    const coords = getRegionCoordinates('beijing');
+    expect(coords).toBeDefined();
+    expect(coords).toHaveLength(2);
+    // 北京中心约 [116.4, 39.9]
+    expect(coords![0]).toBeCloseTo(116.4, 0);
+    expect(coords![1]).toBeCloseTo(39.9, 0);
+  });
+
+  it('上海坐标应正确', () => {
+    const coords = getRegionCoordinates('shanghai');
+    expect(coords).toBeDefined();
+    expect(coords![0]).toBeCloseTo(121.5, 0);
+    expect(coords![1]).toBeCloseTo(31.2, 0);
+  });
+
+  it('不存在的 ID 应返回 undefined', () => {
+    expect(getRegionCoordinates('nonexistent')).toBeUndefined();
   });
 });
