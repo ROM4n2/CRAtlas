@@ -55,6 +55,14 @@
 - [x] Task 5: 性能懒加载 — 无需修改 (已有 dynamic + ssr:false)
 - [x] Task 6: 最终验证 — 2134b0f (33 tests, 51 页面, tsc clean)
 
+## Phase 4: 交流功能 — COMPLETE (5 commits, 3f1e9dd..bcc6e13)
+
+- [x] Task 1: Giscus 评论 — 3f1e9dd (@giscus/react, 三详情页集成)
+- [x] Task 2: 笔记功能 — 0d658d5 (localStorage CRUD + NotesPanel)
+- [x] Task 3: 贡献指南 — 650db70 (Issue 模板 + PR 模板)
+- [x] Task 4: 关于页完善 — bcc6e13 (贡献指南文案)
+- [x] Task 5: 最终验证 — ae6413a (33 tests, 51 页面, tsc clean)
+
 ## Phase 3: 详情页与内容填充 — COMPLETE (9 commits, e64d620..7d2e7e8)
 
 - [x] Task 1: 史料出处组件 — e64d620 (SourceList.tsx, build pass)
