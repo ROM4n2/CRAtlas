@@ -8,9 +8,20 @@
 
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { people } from '@/data/people';
 import { getPerson, getFactionName } from '@/lib/data';
 import SourceList from '@/components/ui/SourceList';
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const person = getPerson(params.id);
+  if (!person) return { title: '人物未找到 - CRAtlas' };
+  const lifeRange = `${person.birthYear ?? '?'}–${person.deathYear ?? '?'}`;
+  return {
+    title: `${person.name} - CRAtlas`,
+    description: `${person.name}（${lifeRange}）${person.biography.slice(0, 120)}`,
+  };
+}
 
 export function generateStaticParams() {
   return people.map((p) => ({ id: p.id }));

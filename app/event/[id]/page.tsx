@@ -8,9 +8,19 @@
 
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { events } from '@/data/events';
 import { getEvent, getPerson, getFactionName } from '@/lib/data';
 import SourceList from '@/components/ui/SourceList';
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const event = getEvent(params.id);
+  if (!event) return { title: '事件未找到 - CRAtlas' };
+  return {
+    title: `${event.title} - CRAtlas`,
+    description: event.description.slice(0, 160),
+  };
+}
 
 export function generateStaticParams() {
   return events.map((e) => ({ id: e.id }));

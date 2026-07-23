@@ -7,9 +7,19 @@
  */
 
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { factions } from '@/data/factions';
 import { getFaction } from '@/lib/data';
 import SourceList from '@/components/ui/SourceList';
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const faction = getFaction(params.id);
+  if (!faction) return { title: '派系未找到 - CRAtlas' };
+  return {
+    title: `${faction.name} - CRAtlas`,
+    description: `${faction.name}（${faction.factionType}）${faction.description.slice(0, 120)}`,
+  };
+}
 
 export function generateStaticParams() {
   return factions.map((f) => ({ id: f.id }));
