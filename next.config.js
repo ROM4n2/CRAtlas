@@ -4,6 +4,7 @@ const nextConfig = {
   images: { unoptimized: true },
   trailingSlash: true,
   reactStrictMode: true,
+  basePath: '/CRAtlas',
 };
 
 module.exports = nextConfig;
